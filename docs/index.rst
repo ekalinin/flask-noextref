@@ -3,7 +3,7 @@ Flask-NoExtRef
 
 .. module:: flaskext.noextref
 
-Flask-NoExtRef is an extension to 'Flask'_ that adds hiding 
+Flask-NoExtRef is an extension for `Flask`_ that adds hiding 
 external URLs support to your Flask application.
 
 .. _Flask: http://flask.pocoo.org/
@@ -22,16 +22,26 @@ or alternatively if you have pip installed::
 How to Use
 ----------
 
-Basically all you have to do is to create an :class:`NoExtRef` object
-and use this.  Here is a complete example::
+Basically all you have to do is to create an :class:`NoExtRef` object.
+After that you can use it's methods in your python code or user appropriate
+filters in `Jinja`_ templates for hiding external URLs.
+Here is a complete example::
 
-    from flask import Flask
-    from flaskext.noextref import NoExtRef
+    >>> from flask import Flask
+    >>> from flaskext.noextref import NoExtRef
 
-    app = Flask(__name__)
-    noext = NoExtRef(app)
+    >>> app = Flask(__name__)
+    >>> noext = NoExtRef(app)
 
-That is all! After this moment you can use filters:
+    >>> # these two lines of code are necessary in console only
+    >>> ctx = app.test_request_context()
+    >>> ctx.push()
 
-  * :meth:`~NoExtRef.hide_url`
-  * :meth:`~NoExtRef.hide_urls`
+    >>> print noext.hide_url("http://google.com")
+    /ext-url/http://google.com
+    >>> print noext.hide_urls('test <a href="http://google.com"> anchore </a> ')
+    test <a href="/ext-url/http://google.com"> anchore </a> 
+
+Or you can use appropriate filters in Jinja templates::
+
+    {{ some_text_with_refs|hide_urls }}
