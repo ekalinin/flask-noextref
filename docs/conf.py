@@ -26,7 +26,7 @@ sys.path.append(os.path.abspath('_themes'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -97,7 +97,10 @@ html_theme = 'flask_small'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'index_logo':       None,
+    'github_fork':      'ekalinin/flask-noextref'
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['_themes']
@@ -215,3 +218,10 @@ man_pages = [
     ('index', 'flask-noextref', u'Flask-NoExtRef Documentation',
      [u'Eugene Kalinin'], 1)
 ]
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    'http://docs.python.org/': None,
+    'http://flask.pocoo.org/docs/': None,
+    'http://werkzeug.pocoo.org/docs/': None
+}

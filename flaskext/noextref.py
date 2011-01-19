@@ -20,8 +20,6 @@ from flask import request
 
 
 # TODO:
-#   * docstring, описание переменных, методов
-#   * документация - добавить logo
 #   * защита от двойной инициализации
 #       * выставлять app.noext
 #       * проверять при инициализации класса app.noext.
@@ -53,15 +51,15 @@ class NoExtRef(object):
         )
 
     def go_to_url(self, url):
-        """Redirects to the external 'url'"""
+        """Redirects to the external `url`"""
         args = '&'.join( '%s=%s'%(key, value) for key, value \
                     in request.args.iteritems() )
         return redirect('%s?%s'%(url, args))
 
     def hide_url(self, url):
         """
-        Converts external 'url' to the local URL.
-        Also available in Jinja templates as 'hide_url' filter.
+        Converts external `url` to the local URL.
+        Also available in Jinja templates as filter.
         """
         for u in self.safe_domains:
             if u in url:
@@ -69,8 +67,10 @@ class NoExtRef(object):
         return url_for(self.endpoint, url=url)
 
     def hide_urls(self, text):
-        """Find all references (href) in the 'text' 
-        and replaces them with local"""
+        """
+        Finds all references (href) in the `text` and replaces
+        them with local. Also available in Jinja templates as filter.
+        """
         def href_repl(m):
             if m:
                 url = m.group(1)
@@ -78,8 +78,3 @@ class NoExtRef(object):
             return m
 
         return self.NOEXTREF_RE.sub(href_repl, text)
-
-
-# ---------------------------------------------------------
-# robots.txt for hide redirect path
-# ---------------------------------------------------------
