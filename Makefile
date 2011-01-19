@@ -2,7 +2,7 @@
 
 all: clean-pyc test
 
-test:
+test: clean-pyc
 	python test_noextref.py -v
 
 clean-pyc:
