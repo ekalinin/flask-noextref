@@ -73,13 +73,17 @@ class NoExtRefTestCase(unittest.TestCase):
                 abort(405)
             return redirect(url)
 
-        c, noext = self._create_noext(rule='/ext-test-url/', 
+        test_url = 'http://www.appenginejob.com/about/?test=1&test=2'
+        ext_url = '/ext-test-url/'
+        c, noext = self._create_noext(rule=ext_url,
                 view_func=custom_view_func)
 
-        test_url = 'http://www.appenginejob.com/about/?test=1&test=2'
         response = c.get(noext.hide_url(test_url))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], test_url)
+
+        response = c.get(ext_url)
+        self.assertEqual(response.status_code, 405)
 
 if __name__ == '__main__':
     unittest.main()
