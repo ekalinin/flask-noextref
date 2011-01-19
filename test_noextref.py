@@ -3,57 +3,63 @@ from __future__ import with_statement
 import urllib
 import unittest
 from flaskext.noextref import NoExtRef
-import flask
+from flask import Flask
 from flask import redirect
+from flask import abort
+from flask import request
+from flask import render_template_string
 
 
 class NoExtRefTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.app = flask.Flask(__name__)
-        self.app.config['TESTING'] = True
-        self.client = self.app.test_client()
-        self._ctx = self.app.test_request_context()
-        self._ctx.push()
-
+    def _create_noext(self, rule=None, view_func=None, safe_domains=[]):
         self.noext_url = '/test-ext-url-handler'
-        self.noext = NoExtRef(app=self.app, rule='%s/<path:url>'%self.noext_url)
+
+        app = Flask(__name__)
+        app.config['TESTING'] = True
+        app.test_request_context().push()
+        client = app.test_client()
+
+        if not rule:
+            rule = '%s/<path:url>'%self.noext_url
+
+        noext = NoExtRef(app, rule=rule, view_func=view_func,
+                    safe_domains=safe_domains)
+        return (client, noext)
 
     def test_hide_urls(self):
+        client, noext = self._create_noext()
         text_tpl = 'some text with <a href="-=URL=-"> anchore </a>!!!!'
         text_ext_url = text_tpl.replace("-=URL=-",
             'http://www.appenginejob.com/job/152/Python-Developer/')
         text_loc_url = text_tpl.replace("-=URL=-",
             self.noext_url + '/' +
             'http://www.appenginejob.com/job/152/Python-Developer/')
-        self.assertEqual(self.noext.hide_urls(text_ext_url), text_loc_url)
+        self.assertEqual(noext.hide_urls(text_ext_url), text_loc_url)
 
     def test_go_to_url(self):
-        response = self.client.get(self.noext_url+'//')
+        client, noext = self._create_noext()
+        response = client.get(self.noext_url+'//')
         self.assertEqual(response.status_code, 404)
 
         test_url = 'http://www.appenginejob.com/about?test1=1&test2=2'
-        response = self.client.get('%s/%s'%(self.noext_url, test_url))
+        response = client.get('%s/%s'%(self.noext_url, test_url))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], test_url)
 
     def test_hide_urls_filter(self):
+        client, noext = self._create_noext()
         test_url = 'http://www.appenginejob.com/about?test1=1&test2=2'
         tpl = "{% with -%}"+\
                     "{% set test_url = '"+test_url+"' %}" + \
                     "{{ test_url|hide_url }}" + \
               "{%- endwith %}"
-        tpl_res = flask.render_template_string(tpl)
+        tpl_res = render_template_string(tpl)
         tpl_res = urllib.unquote(tpl_res)
         self.assertEqual(tpl_res,u'%s/%s'%(self.noext_url, test_url))
 
     def test_hide_urls_safe_domain(self):
-        a = flask.Flask(__name__)
-        a.config['TESTING'] = True
-        a.debug = True
-        c = a.test_client()
-
-        noext = NoExtRef(app=a, safe_domains=['appenginejob.com'])
+        client, noext = self._create_noext(safe_domains=['appenginejob.com'])
 
         text_tpl = 'some text with <a href="-=URL=-"> anchore </a>!!!!'
         text_url = text_tpl.replace("-=URL=-",
@@ -61,18 +67,19 @@ class NoExtRefTestCase(unittest.TestCase):
         self.assertEqual(noext.hide_urls(text_url), text_url)
 
     def test_url_handler(self):
-        a = flask.Flask(__name__)
-        a.config['TESTING'] = True
-        a.debug = True
-        c = a.test_client()
+        def custom_view_func():
+            url = request.args.get('url', None)
+            if not url:
+                abort(405)
+            return redirect(url)
 
-        def custom_view_func(url):
-            return redirect('http://www.google.com')
+        c, noext = self._create_noext(rule='/ext-test-url/', 
+                view_func=custom_view_func)
 
-        noext = NoExtRef(app=a, view_func=custom_view_func)
-        response = c.get('/ext-url/http://www.appenginejob.com/about/')
+        test_url = 'http://www.appenginejob.com/about/?test=1&test=2'
+        response = c.get(noext.hide_url(test_url))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], 'http://www.google.com')
+        self.assertEqual(response.headers["Location"], test_url)
 
 if __name__ == '__main__':
     unittest.main()
