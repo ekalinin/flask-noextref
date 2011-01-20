@@ -47,7 +47,7 @@ class NoExtRefTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], test_url)
 
-    def test_hide_urls_filter(self):
+    def test_hide_url_filter(self):
         client, noext = self._create_noext()
         test_url = 'http://www.appenginejob.com/about?test1=1&test2=2'
         tpl = "{% with -%}"+\
@@ -55,8 +55,19 @@ class NoExtRefTestCase(unittest.TestCase):
                     "{{ test_url|hide_url }}" + \
               "{%- endwith %}"
         tpl_res = render_template_string(tpl)
-        tpl_res = urllib.unquote(tpl_res)
+        #tpl_res = urllib.unquote(tpl_res)
         self.assertEqual(tpl_res,u'%s/%s'%(self.noext_url, test_url))
+
+    def test_hide_urls_filter(self):
+        client, noext = self._create_noext()
+        test_url = '<a href="http://www.odesk.com/jobs/Programming-Tutor_~~f7412e3478d07495?source=rss">View job &raquo;</a>'
+        res_url  = '<a href="%s/http://www.odesk.com/jobs/Programming-Tutor_~~f7412e3478d07495?source=rss">View job &raquo;</a>'%(\
+                    self.noext_url)
+        tpl = "{% set test_url = '"+test_url+"' %}" + \
+                    "{{ test_url|hide_urls }}" 
+        tpl_res = render_template_string(tpl)
+        #tpl_res = urllib.unquote(tpl_res)
+        self.assertEqual(tpl_res,res_url)
 
     def test_hide_urls_safe_domain(self):
         client, noext = self._create_noext(safe_domains=['appenginejob.com'])
@@ -71,7 +82,9 @@ class NoExtRefTestCase(unittest.TestCase):
             url = request.args.get('url', None)
             if not url:
                 abort(405)
-            return redirect(url)
+            args = '&'.join( '%s=%s'%(key, value) for key, value \
+                        in request.args.iteritems() if key != 'url')
+            return redirect('%s&%s'%(url, args))
 
         test_url = 'http://www.appenginejob.com/about/?test=1&test=2'
         ext_url = '/ext-test-url/'

@@ -11,7 +11,7 @@
 """
 
 import re
-import urlparse
+import urllib
 
 from flask import abort
 from flask import url_for
@@ -64,7 +64,7 @@ class NoExtRef(object):
         for u in self.safe_domains:
             if u in url:
                 return url
-        return url_for(self.endpoint, url=url)
+        return urllib.unquote(url_for(self.endpoint, url=url))
 
     def hide_urls(self, text):
         """
