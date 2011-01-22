@@ -98,11 +98,11 @@ class NoExtRefTestCase(unittest.TestCase):
         response = c.get(ext_url)
         self.assertEqual(response.status_code, 405)
 
-    def test_url_handler(self):
-       c, noext = self._create_noext(add_jinja_filters=False)
-       filters = c.application.jinja_env.filters
-       self.assertFalse('hide_url' in filters)
-       self.assertFalse('hide_urls' in filters)
+    def test_add_jinja_filters(self):
+        c, noext = self._create_noext(add_jinja_filters=False)
+        filters = c.application.jinja_env.filters
+        self.assertFalse('hide_url' in filters)
+        self.assertFalse('hide_urls' in filters)
 
 
 if __name__ == '__main__':
