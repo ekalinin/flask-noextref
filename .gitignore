@@ -1,3 +1,4 @@
 build
+Flask_NoExtRef.egg-info
 *.swp
 *.pyc
