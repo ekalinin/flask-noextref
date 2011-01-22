@@ -29,6 +29,7 @@ setup(
     namespace_packages=['flaskext'],
     zip_safe=False,
     platforms='any',
+    test_suite='test_noextref.NoExtRefTestCase',
     install_requires=[
         'Flask'
     ],
