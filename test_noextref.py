@@ -12,7 +12,8 @@ from flask import render_template_string
 
 class NoExtRefTestCase(unittest.TestCase):
 
-    def _create_noext(self, rule=None, view_func=None, safe_domains=[]):
+    def _create_noext(self, rule=None, view_func=None, safe_domains=[],
+                        add_jinja_filters=True):
         self.noext_url = '/test-ext-url-handler'
 
         app = Flask(__name__)
@@ -24,7 +25,8 @@ class NoExtRefTestCase(unittest.TestCase):
             rule = '%s/<path:url>'%self.noext_url
 
         noext = NoExtRef(app, rule=rule, view_func=view_func,
-                    safe_domains=safe_domains)
+                    safe_domains=safe_domains, 
+                    add_jinja_filters=add_jinja_filters)
         return (client, noext)
 
     def test_hide_urls(self):
@@ -55,7 +57,6 @@ class NoExtRefTestCase(unittest.TestCase):
                     "{{ test_url|hide_url }}" + \
               "{%- endwith %}"
         tpl_res = render_template_string(tpl)
-        #tpl_res = urllib.unquote(tpl_res)
         self.assertEqual(tpl_res,u'%s/%s'%(self.noext_url, test_url))
 
     def test_hide_urls_filter(self):
@@ -66,7 +67,6 @@ class NoExtRefTestCase(unittest.TestCase):
         tpl = "{% set test_url = '"+test_url+"' %}" + \
                     "{{ test_url|hide_urls }}" 
         tpl_res = render_template_string(tpl)
-        #tpl_res = urllib.unquote(tpl_res)
         self.assertEqual(tpl_res,res_url)
 
     def test_hide_urls_safe_domain(self):
@@ -97,6 +97,13 @@ class NoExtRefTestCase(unittest.TestCase):
 
         response = c.get(ext_url)
         self.assertEqual(response.status_code, 405)
+
+    def test_url_handler(self):
+       c, noext = self._create_noext(add_jinja_filters=False)
+       filters = c.application.jinja_env.filters
+       self.assertFalse('hide_url' in filters)
+       self.assertFalse('hide_urls' in filters)
+
 
 if __name__ == '__main__':
     unittest.main()

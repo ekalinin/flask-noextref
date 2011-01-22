@@ -27,12 +27,24 @@ from flask import request
 #       * Тест!!!
 
 class NoExtRef(object):
-    """ """
+    """NoExtRef object adds ability to a Flask application to hide
+    external URL.
+
+    :param app: the :class:`Flask` application
+    :param rule: the URL rule as string
+    :param endpoint: the endpoint for the registered URL rule
+    :param view_func: the function to call when serving a request
+                      to the provided endpoint
+    :param safe_domains: the list of domains that are not external.
+                         URL containing one of these domains will
+                         not be hidden.
+    :param add_jinja_filters: if True then adds new filters for Jinja
+    """
 
     NOEXTREF_RE = re.compile('href="(?P<url>.*)"', re.IGNORECASE|re.UNICODE)
 
     def __init__(self, app, rule='/ext-url/<path:url>', endpoint='ext_url', 
-                    view_func=None, safe_domains=[]):
+                    view_func=None, safe_domains=[], add_jinja_filters=True):
         self.app = app
         self.rule = rule
         self.endpoint = endpoint
@@ -45,10 +57,11 @@ class NoExtRef(object):
             view_func = self.go_to_url
         self.app.add_url_rule(self.rule, self.endpoint, view_func)
 
-        self.app.jinja_env.filters.update(
-            hide_url=self.hide_url,
-            hide_urls=self.hide_urls
-        )
+        if add_jinja_filters:
+            self.app.jinja_env.filters.update(
+                hide_url=self.hide_url,
+                hide_urls=self.hide_urls
+            )
 
     def go_to_url(self, url):
         """Redirects to the external `url`"""

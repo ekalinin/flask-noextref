@@ -1,0 +1,32 @@
+Metadata-Version: 1.0
+Name: Flask-NoExtRef
+Version: 0.1
+Summary: Support for hiding external URLs
+Home-page: http://github.com/ekalinin/flask-noextref
+Author: Eugene Kalinin
+Author-email: e.v.kalinin@gmail.com
+License: BSD
+Description: 
+        Flask-NoExtRef
+        --------------
+        
+        Provides support for hiding external URLs for
+        sites based on Flask.
+        
+        Links
+        `````
+        
+        * `documentation <http://packages.python.org/Flask-NoExtRef>`_
+        * `development version
+          <http://github.com/ekalinin/flask-noextref/zipball/master#egg=Flask-NoExtRef-dev>`_
+        
+        
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
