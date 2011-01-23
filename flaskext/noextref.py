@@ -19,16 +19,10 @@ from flask import redirect
 from flask import request
 
 
-# TODO:
-#   * защита от двойной инициализации
-#       * выставлять app.noext
-#       * проверять при инициализации класса app.noext.
-#         Если он есть, то возвращять его. 
-#       * Тест!!!
-
 class NoExtRef(object):
-    """NoExtRef object adds ability to a Flask application to hide
-    external URL.
+    """NoExtRef object adds ability to the Flask application to hide
+    external URL. Change the state of the Flask application: adds Jinja
+    filters and creates back reference (app._noextref).
 
     :param app: the :class:`Flask` application
     :param rule: the URL rule as string
@@ -53,6 +47,9 @@ class NoExtRef(object):
         elif safe_domains:
             self.safe_domains = [safe_domains]
 
+        if hasattr(self.app, '_noextref'):
+            return
+
         if view_func is None:
             view_func = self.go_to_url
         self.app.add_url_rule(self.rule, self.endpoint, view_func)
@@ -62,6 +59,8 @@ class NoExtRef(object):
                 hide_url=self.hide_url,
                 hide_urls=self.hide_urls
             )
+
+        self.app._noextref = self
 
     def go_to_url(self, url):
         """Redirects to the external `url`"""

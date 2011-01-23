@@ -69,7 +69,7 @@ class NoExtRefTestCase(unittest.TestCase):
         tpl_res = render_template_string(tpl)
         self.assertEqual(tpl_res,res_url)
 
-    def test_hide_urls_safe_domain(self):
+    def test_safe_domain(self):
         client, noext = self._create_noext(safe_domains=['appenginejob.com'])
 
         text_tpl = 'some text with <a href="-=URL=-"> anchore </a>!!!!'
@@ -104,6 +104,13 @@ class NoExtRefTestCase(unittest.TestCase):
         self.assertFalse('hide_url' in filters)
         self.assertFalse('hide_urls' in filters)
 
+    def test_double_init(self):
+        c, noext = self._create_noext()
+        a = c.application
+
+        noext2 = NoExtRef(app=a)
+        self.assertEqual(a._noextref, noext)
+        self.assertNotEqual(a._noextref, noext2)
 
 if __name__ == '__main__':
     unittest.main()
