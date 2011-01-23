@@ -3,7 +3,7 @@
     flaskext.noextref
     ~~~~~~~~~~~~~~~~~
 
-    Provides support for hiding external URLs for
+    Provides support for hiding external URL for
     sites based on Flask.
 
     :copyright: (c) 2011 by Eugene Kalinin.
