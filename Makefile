@@ -11,5 +11,8 @@ clean-pyc:
 	find . -name '*.pyo' -exec rm -f {} +
 
 doc:
-	#$(MAKE) -C docs html
 	python setup.py build_sphinx
+
+pypi: test doc
+	python setup.py sdist upload
+	python setup.py upload_docs --upload-dir=build/sphinx/html
