@@ -21,7 +21,7 @@ from flask import request
 
 class NoExtRef(object):
     """NoExtRef object adds ability to the Flask application to hide
-    external URL. Change the state of the Flask application: adds Jinja
+    external URL. Changes the state of the Flask application: adds Jinja
     filters and creates back reference (app._noextref).
 
     :param app: the :class:`Flask` application
