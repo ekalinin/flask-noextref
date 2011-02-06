@@ -23,7 +23,7 @@ setup(
     license='BSD',
     author='Eugene Kalinin',
     author_email='e.v.kalinin@gmail.com',
-    description='Support for hiding external URLs',
+    description='Support for hiding external URL',
     long_description=__doc__,
     packages=['flaskext'],
     namespace_packages=['flaskext'],

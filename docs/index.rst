@@ -36,8 +36,8 @@ URL. Here is a complete example:
 >>> app.test_request_context().push()
 >>> print noext.hide_url("http://google.com")
 /ext-url/http://google.com
->>> print noext.hide_urls('test <a href="http://google.com"> anchore </a> ')
-test <a href="/ext-url/http://google.com"> anchore </a>
+>>> print noext.hide_urls('test <a href="http://google.com"> anchor </a> ')
+test <a href="/ext-url/http://google.com"> anchor </a>
 
 And this is an example of using new filters in Jinja templates:
 
