@@ -1,4 +1,5 @@
 build
+dist
 Flask_NoExtRef.egg-info
 *.swp
 *.pyc
